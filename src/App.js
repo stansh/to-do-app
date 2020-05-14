@@ -1,116 +1,88 @@
 import React from 'react';
-import {
-  Card, CardImg, CardText, CardBody, CardLink,
-  CardTitle, CardSubtitle
-} from 'reactstrap';
+import logo from './logo.svg';
 import './App.css';
-
-
-
-import {applications} from './shared/applications'
-
-const jobapps = applications;
+import Notes from './Notes';
 
 
 
 
-function Jobs ({item}) {
-  return(
-    <div >
-      <Card className ='jumbotron' >
-          <CardBody>
-            <CardTitle className ='card-title'>{item.company}</CardTitle>
-            <CardSubtitle >{item.type}</CardSubtitle>    
-            <CardText>{item.jobDescriptionUrl}</CardText>
-            <CardText>{item.notes}</CardText>
-            <CardText>{item.createdAt}</CardText>
-            <CardText>{item.updatedAt}</CardText>
-          </CardBody>
-        
-    </Card>
-  </div>
-  )
-
-}
-
-function App() {
-
-  const a = 'PhoneInterviewComplete';
-  const b = 'PhoneInterviewScheduled';
-  const c = 'Applied';
-  const type = {}
-
-  const appListA = jobapps.map(
-    listItem => {
-      if (listItem.type === a){
-      return (
-        <div key ={listItem.id}> <Jobs item = {listItem} /></div>
-      );
+class App extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      items:[],
+      currentItem:{
+        text:'',
+        key:''
       }
     }
-  )
-
-  const appListB = jobapps.map(
-    listItem => {
-      if (listItem.type === b){
-      return (
-        <div key ={listItem.id}> <Jobs item = {listItem} /></div>
-      );
-      }
-    }
-  )
-
-  const appListC = jobapps.map(
-    listItem => {
-      if (listItem.type === c){
-      return (
-        <div key ={listItem.id}> <Jobs item = {listItem} /></div>
-      );
-      }
-    }
-  )
-
-
-/*   NOT FINISHED */
-
- /*  function listA() {
-    return (
-      <div className ='col-md-4'style={{backgroundColor:'lightgreen'}}>{appListA}</div>
-    );
+    this.addItem = this.addItem.bind(this);
+    this.handleInput = this.handleInput.bind(this);
+    this.deleteItem = this.deleteItem.bind(this);
+    this.setUpdate = this.setUpdate.bind(this);
   }
- */
+  addItem(e){
+    e.preventDefault();
+    const newItem = this.state.currentItem;
+    if(newItem.text !==""){
+      const items = [...this.state.items, newItem];
+    this.setState({
+      items: items,
+      currentItem:{
+        text:'',
+        key:''
+      }
+    })
+    }
+  }
+  handleInput(e){
+    this.setState({
+      currentItem:{
+        text: e.target.value,
+        key: Date.now()
+      }
+    })
+  }
+  deleteItem(key){
+    const filteredItems= this.state.items.filter(item =>
+      item.key!==key);
+    this.setState({
+      items: filteredItems
+    })
 
-
-  return (
+  }
+  setUpdate(text,key){
+    console.log("items:"+this.state.items);
+    const items = this.state.items;
+    items.map(item=>{      
+      if(item.key===key){
+        console.log(item.key +"    "+key)
+        item.text= text;
+      }
+    })
+    this.setState({
+      items: items
+    })
     
-    <div className="container ">
-      <div className="row mb-3 ">
-         
-            <button class="btn btn-info mx-2">Show Phone Interview Complete</button>
-            <button class="btn btn-info mx-2">Show Phone Interview Scheduled</button>
-            <button class="btn btn-info mx-2">Show Applied</button>
-         
-        </div> 
-
-       <div className="row ">
-       <div className ='col-md-4'style={{backgroundColor:'lightgreen'}}>{appListA}</div>
-       <div className ='col-md-4'style={{backgroundColor:'lightyellow'}}>{appListB}</div>
-       <div className ='col-md-4'style={{backgroundColor:'lightblue'}}>{appListC}</div>
-       </div> *
+   
+  }
+ render(){
+  return (
+    <div className="App">
+      <header>
+        <form id="form" onSubmit={this.addItem}>
+          <input type="text" placeholder="Enter task" value= {this.state.currentItem.text} onChange={this.handleInput}></input>
+          <button type="submit"><i className="fa fa-plus" /> </button>
+        </form>
+        <p>{this.state.items.text}</p>
         
-      
+          <Notes items={this.state.items} deleteItem={this.deleteItem} setUpdate={this.setUpdate}/>
+        
+      </header>
     </div>
   );
+ }
 }
 
+
 export default App;
-
-
-/* const appListC = jobapps.map(
-  listItem => {
-    return (
-      <div key ={listItem.id}> <Jobs item = {listItem} /></div>
-    );
-  }
-)
- */
